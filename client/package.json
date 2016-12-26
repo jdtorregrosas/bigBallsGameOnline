@@ -4,6 +4,7 @@
   "description": "Client side app",
   "main": "index.js",
   "scripts": {
+    "build": "npm install && bower install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/jdtorregrosas/bigBallsGameOnline/issues"
   },
-  "homepage": "https://github.com/jdtorregrosas/bigBallsGameOnline#readme"
+  "homepage": "https://github.com/jdtorregrosas/bigBallsGameOnline#readme",
+  "devDependencies": {
+    "bower": "^1.8.0"
+  }
 }
