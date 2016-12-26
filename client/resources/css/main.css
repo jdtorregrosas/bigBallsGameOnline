@@ -1,0 +1,23 @@
+/*
+	Custom Styles
+*/
+.loginContainer {
+    margin: 10% auto;
+    width: 50%;
+}
+#gameContainer{
+	display: none;
+	background-color: gray;
+}
+.player {
+	position: absolute;
+    border-radius: 50%;
+    height: 5em;
+    width: 5em;
+    background-color: #005c9a;
+    border: 5px solid #00004a;
+    margin: 1em;
+}
+.player span{
+	color: white;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "client",
+  "version": "0.0.1",
+  "description": "Client side app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdtorregrosas/bigBallsGameOnline.git"
+  },
+  "keywords": [
+    "socket.io",
+    "online"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jdtorregrosas/bigBallsGameOnline/issues"
+  },
+  "homepage": "https://github.com/jdtorregrosas/bigBallsGameOnline#readme"
+}
