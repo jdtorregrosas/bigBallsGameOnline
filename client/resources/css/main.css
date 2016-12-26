@@ -6,18 +6,17 @@
     width: 50%;
 }
 #gameContainer{
+	border-top: 10px solid #c7c7c7;
+	width: 100%;
+	height: 100vh;
 	display: none;
-	background-color: gray;
+	background-color: #E5DDD5;
 }
 .player {
 	position: absolute;
-    border-radius: 50%;
-    height: 5em;
-    width: 5em;
-    background-color: #005c9a;
-    border: 5px solid #00004a;
     margin: 1em;
 }
 .player span{
-	color: white;
+	color: gray;
+	font-weight: 700;
 }
