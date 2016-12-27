@@ -15,7 +15,7 @@
 		messageInput : "#message",
 		gameContainerBoard : "#gameContainer .gameBoard",
 		logoutButton : "#logoutButton",
-		screenLimit : 200
+		userBoard : '#userTag'
 	};
 
 	const playerVelocity = 5;
@@ -56,8 +56,8 @@
 	function login(){
 		if(isLoginFieldEmpty()){
 			setServerConnection();
-			let randomX = Math.floor(Math.random() * $(window).width() - 200) + 1;  
-			let randomY = Math.floor(Math.random() * $(window).height() - 200) + 1;  
+			let randomX = Math.floor(Math.random() * $(window).width()) + 1;  
+			let randomY = Math.floor(Math.random() * $(window).height()) + 1;  
 			socket.emit('login', {
 				username,
 				posX : randomX,
@@ -77,6 +77,7 @@
 		$(viewConfig.loginContainer).slideUp();
 		setTimeout(function(){
 			$(viewConfig.gameContainer).slideDown();
+			$(viewConfig.userBoard).empty().append(username);
 		}, 1500);
 	}
 	function createAllPlayers(players){
@@ -141,13 +142,6 @@
 			posX : parseInt($("#player_"+username).css("left").replace("px", "")),
 			posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
 		});
-	}
-	function validateScreenLimits(position){
-		let size = position === "left" || position === "right" ?  $(window).width() : $(window).height();
-		if(("#player_"+username).css(position, parseInt($("#player_"+username).css(position).replace("px", "")) + playerVelocity) <= size - screenLimit)
-			return true;
-		else
-			return false;
 	}
 	function turnOnKeyboard(){
 		$('body').on('keydown', function(ev){
