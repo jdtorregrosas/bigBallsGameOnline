@@ -18,8 +18,12 @@ body{
     margin: 1em;
 }
 .player span{
-	color: gray;
-	font-weight: 700;
+    display: block;
+    color: #525252;
+    font-weight: 700;
+    text-align: center;
+    background-color: rgba(128, 128, 128, 0.29);
+    border-radius: 3px;
 }
 .chatBox {
     margin: 1em;

@@ -5,6 +5,7 @@
 	<title>Client Side</title>
 	<!-- Vendors -->
 	<link rel="stylesheet" type="text/css" href="resources/vendors/materialize/dist/css/materialize.min.css">
+	<link rel="stylesheet" type="text/css" href="resources/css/animate.css">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<script type="text/javascript" src="resources/vendors/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="resources/vendors/materialize/dist/js/materialize.min.js"></script>
@@ -15,7 +16,7 @@
 </head>
 <body>
 <header>
-	<div id="loginContainer" class="loginContainer">
+	<div id="loginContainer" class="loginContainer animated bounceInLeft">
 		<div class="input-field col s6">
           <input  type="text" id="username" class="validate">
           <label for="username">Username</label>
@@ -30,7 +31,7 @@
 		<div class="gameBoard"></div>
 		<div class="chatBox">
 			<input type="text" id="message"/>
-			<a class="waves-effect waves-light btn" id="sendMessageButton">Send</a>
+			<a class="waves-effect waves-light btn" id="sendMessageButton"><i class="material-icons">message</i></a>
 		</div>
 	</div>
 	<script type="text/javascript" src="resources/js/app.js"></script>
