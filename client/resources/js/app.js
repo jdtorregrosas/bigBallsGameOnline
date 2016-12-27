@@ -10,20 +10,44 @@
 		usernameField : "#username",
 		gameContainer : "#gameContainer",
 		loginContainer : "#loginContainer",
-		loginButton : "#loginButton"
+		loginButton : "#loginButton",
+		sendMessageButton : "#sendMessageButton",
+		messageInput : "#message"
 	};
 
 	const playerVelocity = 5;
+	const sessionKey = "onlinesessionkey";
 	let username;
 	let tempSocket;
+	let isLogged = false;
+
+	validateSession();
+
+	function validateSession(){
+		if(localStorage.getItem(sessionKey)){
+			username = localStorage.getItem(sessionKey);
+			let socket = io(serverConfig.url + ":" + serverConfig.port);
+			tempSocket = socket;
+			socket.emit('login', {
+				username,
+				posX : null,
+				posY : null,
+				isLogged : true
+			});
+			socket.on('response', function(response){
+			    createAllPlayers(response);
+			});
+			showGame();
+			turnOnKeyboard();
+		}
+	}
+
 
 	function login(){
 		if(isLoginFieldEmpty()){
 			let socket = io(serverConfig.url + ":" + serverConfig.port);
 			tempSocket = socket;
-			socket.on('response', function(response){
-			    createAllPlayers(response);
-			});
+			setServerEvents();
 			let randomX = Math.floor(Math.random() * $(window).width()) + 1;  
 			let randomY = Math.floor(Math.random() * $(window).height()) + 1;  
 			socket.emit('login', {
@@ -32,9 +56,19 @@
 				posY : randomY
 			});
 			showGame();
+			turnOnKeyboard();
+			localStorage.setItem(sessionKey, username);
 		}else{
 			Materialize.toast('Wrong credentials.', 3000, 'rounded');
 		}
+	}
+	function setServerEvents(){
+		tempSocket.on('response', function(response){
+		    createAllPlayers(response);
+		});
+		tempSocket.on('messageResponse', function(response){
+		    Materialize.toast(response.username + ": " + response.message, 5000, 'rounded');
+		});
 	}
 	function isLoginFieldEmpty(){
 		return username.length > 0;
@@ -50,20 +84,27 @@
 	function createAllPlayers(players){
 		$(viewConfig.gameContainer).empty();
 		for (var i = 0; i < players.length; i++) {
-	    	createPlayer(players[i].username, players[i].posX, players[i].posY);
+	    	createPlayer(players[i]);
 	    }
 	}
-	function createPlayer(username, posX, posY){
-		$(viewConfig.gameContainer).append(createPlayerView(username, posX, posY));
+	function createPlayer(player){
+		$(viewConfig.gameContainer).append(createPlayerView(player));
 	}
-	function createPlayerView(username, posX, posY){
-		let randomHexaColor = '#'+Math.floor(Math.random()*16777215).toString(16);
-		let html = "<div id='player_"+ username +"' class='player' style='left: "+ posX +"px; top: "+ posY +"px;'>";
-			html += "<i class='large material-icons' style='color: "+ randomHexaColor +"'>perm_identity</i>";
-			html += "<span>"+ username +"</span>";
+	function createPlayerView(player){
+		let html = "<div id='player_"+ player.username +"' class='player' style='left: "+ player.posX +"px; top: "+ player.posY +"px;'>";
+			html += "<i class='large material-icons' style='color: "+ player.color +"'>perm_identity</i>";
+			html += "<span>"+ player.username +"</span>";
 			html += "</div>";
 		return html;
 	}	
+
+	function sendMessage(){
+		tempSocket.emit('sendMessage', {
+			username,
+			message : $(viewConfig.messageInput).val()
+		});
+		$(viewConfig.messageInput).val("");
+	}
 	/*
 		Event listeners
 	*/
@@ -71,24 +112,29 @@
 		username = $(viewConfig.usernameField).val();
 		login();
 	}));
+	$(viewConfig.sendMessageButton).on('click', (function(){
+		 sendMessage();
+	}));
 
-	$('body').on('keydown', function(ev){
-        if(ev.keyCode === 39) {
-            $("#player_"+username).css("left", parseInt($("#player_"+username).css("left").replace("px", "")) + playerVelocity);
-        }
-        if(ev.keyCode === 37) {
-            $("#player_"+username).css("left", parseInt($("#player_"+username).css("left").replace("px", "")) - playerVelocity);
-        }
-        if(ev.keyCode === 38) {
-            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) - playerVelocity);
-        }
-        if(ev.keyCode === 40) {
-            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) + playerVelocity);
-        }
-        tempSocket.emit('updatePosition', {
-			username,
-			posX : parseInt($("#player_"+username).css("left").replace("px", "")),
-			posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
-		});
-    });
+	function turnOnKeyboard(){
+		$('body').on('keydown', function(ev){
+	        if(ev.keyCode === 39) {
+	            $("#player_"+username).css("left", parseInt($("#player_"+username).css("left").replace("px", "")) + playerVelocity);
+	        }
+	        if(ev.keyCode === 37) {
+	            $("#player_"+username).css("left", parseInt($("#player_"+username).css("left").replace("px", "")) - playerVelocity);
+	        }
+	        if(ev.keyCode === 38) {
+	            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) - playerVelocity);
+	        }
+	        if(ev.keyCode === 40) {
+	            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) + playerVelocity);
+	        }
+	        tempSocket.emit('updatePosition', {
+				username,
+				posX : parseInt($("#player_"+username).css("left").replace("px", "")),
+				posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
+			});
+	    });
+	}
 })();
