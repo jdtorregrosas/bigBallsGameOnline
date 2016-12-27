@@ -30,6 +30,9 @@ io.on('connection', function (socket) {
     console.log(players)
     io.emit('response', players)
   })
+  socket.on('sendMessage', function (messageObject) {
+    io.emit('messageResponse', messageObject)
+  })
 })
 
 http.listen(3000, function () {
