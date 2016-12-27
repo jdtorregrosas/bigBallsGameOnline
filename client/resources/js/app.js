@@ -118,16 +118,14 @@
 			socket.emit('logout', username);
 			localStorage.clear();
 			$(viewConfig.loginContainer).slideDown();
-			setTimeout(function(){
-				$(viewConfig.gameContainer).slideUp();
-			}, 1500);
+			$(viewConfig.gameContainer).slideUp();
 		}
 	}
 	/*
 		Event listeners
 	*/
 	$(viewConfig.loginButton).on('click', (function(){
-		username = $(viewConfig.usernameField).val();
+		username = $(viewConfig.usernameField).val().toLowerCase();
 		login();
 	}));
 	$(viewConfig.sendMessageButton).on('click', (function(){
@@ -143,6 +141,8 @@
 			posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
 		});
 	}
+
+	// Key board handler
 	function turnOnKeyboard(){
 		$('body').on('keydown', function(ev){
 	        if(ev.keyCode === 39) {
