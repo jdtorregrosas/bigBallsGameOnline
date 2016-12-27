@@ -13,7 +13,9 @@
 		loginButton : "#loginButton",
 		sendMessageButton : "#sendMessageButton",
 		messageInput : "#message",
-		gameContainerBoard : "#gameContainer .gameBoard"
+		gameContainerBoard : "#gameContainer .gameBoard",
+		logoutButton : "#logoutButton",
+		screenLimit : 200
 	};
 
 	const playerVelocity = 5;
@@ -48,14 +50,14 @@
 		    createAllPlayers(response);
 		});
 		socket.on('messageResponse', function(response){
-		    Materialize.toast(response.username + ": " + response.message, 5000, 'rounded');
+		    Materialize.toast('<span style="color: '+ response.color +'">' + response.username + " : </span> " + response.message, 5000, 'rounded');
 		});
 	}
 	function login(){
 		if(isLoginFieldEmpty()){
 			setServerConnection();
-			let randomX = Math.floor(Math.random() * $(window).width()) + 1;  
-			let randomY = Math.floor(Math.random() * $(window).height()) + 1;  
+			let randomX = Math.floor(Math.random() * $(window).width() - 200) + 1;  
+			let randomY = Math.floor(Math.random() * $(window).height() - 200) + 1;  
 			socket.emit('login', {
 				username,
 				posX : randomX,
@@ -74,7 +76,6 @@
 		//Animation purpose only
 		$(viewConfig.loginContainer).slideUp();
 		setTimeout(function(){
-			$(viewConfig.loginContainer).remove();
 			$(viewConfig.gameContainer).slideDown();
 		}, 1500);
 	}
@@ -96,11 +97,30 @@
 	}	
 
 	function sendMessage(){
-		socket.emit('sendMessage', {
-			username,
-			message : $(viewConfig.messageInput).val()
-		});
-		$(viewConfig.messageInput).val("");
+		if($(viewConfig.messageInput).val().length > 0){
+			socket.emit('sendMessage', {
+				username,
+				message : $(viewConfig.messageInput).val()
+			});
+			$(viewConfig.messageInput).val("");
+		}
+		else{
+			$(viewConfig.messageInput).addClass('inputError');
+			setTimeout(function(){
+				$(viewConfig.messageInput).removeClass('inputError');
+			}, 2000);
+		}
+	}
+	function logout(){
+		var response = confirm("Logout?");
+		if(response){
+			socket.emit('logout', username);
+			localStorage.clear();
+			$(viewConfig.loginContainer).slideDown();
+			setTimeout(function(){
+				$(viewConfig.gameContainer).slideUp();
+			}, 1500);
+		}
 	}
 	/*
 		Event listeners
@@ -112,12 +132,22 @@
 	$(viewConfig.sendMessageButton).on('click', (function(){
 		 sendMessage();
 	}));
+	$(viewConfig.logoutButton).on('click', (function(){
+		 logout();
+	}));
 	function updatePlayerPosition(){
 		socket.emit('updatePosition', {
 			username,
 			posX : parseInt($("#player_"+username).css("left").replace("px", "")),
 			posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
 		});
+	}
+	function validateScreenLimits(position){
+		let size = position === "left" || position === "right" ?  $(window).width() : $(window).height();
+		if(("#player_"+username).css(position, parseInt($("#player_"+username).css(position).replace("px", "")) + playerVelocity) <= size - screenLimit)
+			return true;
+		else
+			return false;
 	}
 	function turnOnKeyboard(){
 		$('body').on('keydown', function(ev){
@@ -136,6 +166,9 @@
 	        if(ev.keyCode === 40) {
 	            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) + playerVelocity);
 	        	updatePlayerPosition();
+	        }
+	        if(ev.keyCode === 13) {
+	            sendMessage();
 	        }
 	    });
 	}
