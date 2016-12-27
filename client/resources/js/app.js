@@ -34,9 +34,7 @@
 				posY : null,
 				isLogged : true
 			});
-			socket.on('response', function(response){
-			    createAllPlayers(response);
-			});
+			setServerEvents();
 			showGame();
 			turnOnKeyboard();
 		}
@@ -115,26 +113,31 @@
 	$(viewConfig.sendMessageButton).on('click', (function(){
 		 sendMessage();
 	}));
-
+	function updatePlayerPosition(){
+		tempSocket.emit('updatePosition', {
+			username,
+			posX : parseInt($("#player_"+username).css("left").replace("px", "")),
+			posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
+		});
+	}
 	function turnOnKeyboard(){
 		$('body').on('keydown', function(ev){
 	        if(ev.keyCode === 39) {
 	            $("#player_"+username).css("left", parseInt($("#player_"+username).css("left").replace("px", "")) + playerVelocity);
+	        	updatePlayerPosition();
 	        }
 	        if(ev.keyCode === 37) {
 	            $("#player_"+username).css("left", parseInt($("#player_"+username).css("left").replace("px", "")) - playerVelocity);
+	        	updatePlayerPosition();
 	        }
 	        if(ev.keyCode === 38) {
 	            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) - playerVelocity);
+	        	updatePlayerPosition();
 	        }
 	        if(ev.keyCode === 40) {
 	            $("#player_"+username).css("top", parseInt($("#player_"+username).css("top").replace("px", "")) + playerVelocity);
+	        	updatePlayerPosition();
 	        }
-	        tempSocket.emit('updatePosition', {
-				username,
-				posX : parseInt($("#player_"+username).css("left").replace("px", "")),
-				posY :  parseInt($("#player_"+username).css("top").replace("px", ""))
-			});
 	    });
 	}
 })();
